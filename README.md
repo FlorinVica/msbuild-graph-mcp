@@ -207,11 +207,11 @@ Key architectural decisions:
 
 ## Testing
 
-269 tests across 28 test files, sourced from 5 rounds of internet research covering 20+ sources:
+333 tests across 35 test files, sourced from 5 rounds of internet research covering 20+ sources:
 
 ```bash
 dotnet test tests/MsBuildGraphMcp.Tests/
-# Passed! - Failed: 0, Passed: 269, Skipped: 0, Total: 269, Duration: 10s
+# Passed! - Failed: 0, Passed: 333, Skipped: 0, Total: 333, Duration: 12s
 ```
 
 Test categories: validation, core tools, TFM compatibility, security (OWASP/CVE), solution formats, production resilience, concurrency, path edge cases, JSON serialization, real-world scenarios.
@@ -220,7 +220,8 @@ Test categories: validation, core tools, TFM compatibility, security (OWASP/CVE)
 
 ## Complementary Tools
 
-This server provides **pre-build** analysis. For post-build analysis, see:
+This server provides **pre-build** analysis. For **post-build** analysis (requires a completed build), see:
+- [BinlogInsights.Mcp](https://github.com/SergeyTeplyakov/BinlogInsights) — 26 MCP tools + 13 CLI commands for MSBuild binary log analysis (build times, errors, performance, analyzers)
 - [baronfel/mcp-binlog-tool](https://github.com/baronfel/mcp-binlog-tool) — MSBuild binary log analysis (build times, errors, targets)
 
 ## Contributing
