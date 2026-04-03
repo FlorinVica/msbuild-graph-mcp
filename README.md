@@ -3,7 +3,7 @@
 [![NuGet](https://img.shields.io/nuget/v/MsBuildGraphMcp.svg)](https://www.nuget.org/packages/MsBuildGraphMcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8.0%2B-purple.svg)](https://dotnet.microsoft.com/)
-[![Tests](https://img.shields.io/badge/tests-269%20passing-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/tests-333%20passing-brightgreen.svg)](#testing)
 
 > **Pre-build static analysis of MSBuild solutions for LLM-powered coding assistants.**
 > Analyze project dependencies, detect build issues, inspect shared imports, and compare configurations — all through natural language, before building.
@@ -34,6 +34,28 @@ Ask your AI assistant natural questions about your .NET/C++ solution:
 | `check_package_versions` | NuGet package version consistency, CPM detection, VersionOverride tracking |
 | `get_build_order` | Lightweight build order (topological sort) with critical path length |
 | `list_projects` | Fast project listing without MSBuild evaluation — instant response |
+
+## Supported Clients
+
+### ✅ Works with
+
+| Client | Config file | Details |
+|--------|------------|---------|
+| VS Code + GitHub Copilot | `.vscode/mcp.json` | Copilot agent mode calls MCP tools directly |
+| VS Code + Continue.dev | `.vscode/mcp.json` | Works with Claude, GPT, or any LLM backend |
+| Cursor | `.cursor/mcp.json` | Built-in AI calls MCP tools natively |
+| Windsurf | Settings UI | Native MCP support via stdio transport |
+| Claude Desktop | `claude_desktop_config.json` | Full tool + prompt support |
+| Claude Code (terminal) | CLI: `claude mcp add` | Inline with terminal workflow |
+| Visual Studio 2026 + Copilot | `.mcp.json` in solution dir | Native MCP support in VS 2026 Preview |
+
+### ❌ Not supported
+
+| Client | Reason |
+|--------|--------|
+| Visual Studio 2022 | Copilot in VS 2022 does not support MCP protocol |
+| ChatGPT | OpenAI uses a different protocol (function calling, not MCP) |
+| Gemini | Google uses a different protocol (not MCP) |
 
 ## Quick Start
 
