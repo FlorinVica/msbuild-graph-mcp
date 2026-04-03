@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RollForward>Major</RollForward>
+
+    <!-- Dotnet Tool -->
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>msbuild-graph-mcp</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
+
+    <!-- NuGet Metadata -->
+    <PackageId>MsBuildGraphMcp</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>FlorinVica</Authors>
+    <Description>MCP server for MSBuild project graph analysis — exposes dependency graphs, shared imports, TFM compatibility, configuration diffs, and build issue detection to LLM-powered coding assistants.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>mcp;model-context-protocol;ai;dotnet-tool;msbuild;build;dependency-graph</PackageTags>
+    <PackageType>McpServer</PackageType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <!-- Microsoft.Build packages target netstandard2.0 — NU1701 is expected with ExcludeAssets="runtime" -->
+    <NoWarn>$(NoWarn);NU1701</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <InternalsVisibleTo Include="MsBuildGraphMcp.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- MCP Server SDK -->
+    <PackageReference Include="ModelContextProtocol" Version="1.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+
+    <!-- MSBuild APIs — ExcludeAssets="runtime" is MANDATORY, MSBuildLocator provides runtime assemblies -->
+    <PackageReference Include="Microsoft.Build" Version="17.13.9" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="17.13.9" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.13.9" ExcludeAssets="runtime" />
+
+    <!-- MSBuildLocator — discovers VS/SDK installations, sets up assembly resolution at runtime -->
+    <PackageReference Include="Microsoft.Build.Locator" Version="1.11.2" />
+
+    <!-- TFM compatibility checking — ExcludeAssets required by MSBuildLocator (MSBL001) -->
+    <PackageReference Include="NuGet.Frameworks" Version="6.9.1" ExcludeAssets="runtime" PrivateAssets="all" />
+
+    <!-- .slnx format support (SolutionFile.Parse does NOT support .slnx) -->
+    <PackageReference Include="Microsoft.VisualStudio.SolutionPersistence" Version="1.0.52" />
+  </ItemGroup>
+
+</Project>
