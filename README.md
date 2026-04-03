@@ -189,14 +189,14 @@ All tools are **read-only** — no builds are triggered, no files are modified.
 ## Architecture
 
 ```
-┌──────────────────┐     stdio (JSON-RPC)    ┌─────────────────────┐
-│  Claude / Copilot │◄──────────────────────►│ msbuild-graph-mcp   │
-│  VS Code / Cursor │                        │                     │
-└──────────────────┘                         │ MSBuildLocator      │
-                                             │ ► ProjectGraph      │
-                                             │ ► ProjectCollection │
-                                             │ ► SolutionPersist   │
-                                             └─────────────────────┘
+┌──────────────────┐     stdio (JSON-RPC)   ┌─────────────────────┐
+│ Claude / Copilot │◄──────────────────────►│ msbuild-graph-mcp   │
+│ VS Code / Cursor │                        │                     │
+└──────────────────┘                        │ MSBuildLocator      │
+                                            │ ► ProjectGraph      │
+                                            │ ► ProjectCollection │
+                                            │ ► SolutionPersist   │
+                                            └─────────────────────┘
 ```
 
 Key architectural decisions:

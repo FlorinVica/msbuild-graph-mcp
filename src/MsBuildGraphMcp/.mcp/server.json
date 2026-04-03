@@ -1,0 +1,46 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "io.github.florinvica/msbuild-graph-mcp",
+  "description": "Pre-build static analysis of MSBuild solutions — dependency graphs, TFM compatibility, shared imports, configuration diffs, package version consistency, and impact analysis for LLM-powered coding assistants.",
+  "version": "1.1.1",
+  "packages": [
+    {
+      "registryType": "nuget",
+      "registryBaseUrl": "https://api.nuget.org",
+      "identifier": "MsBuildGraphMcp",
+      "version": "1.1.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [],
+      "environmentVariables": [
+        {
+          "name": "MSBUILD_MCP_ALLOWED_PATHS",
+          "value": "{allowed_paths}",
+          "variables": {
+            "allowed_paths": {
+              "description": "Semicolon-separated list of allowed directories for project evaluation. Leave empty to allow all paths.",
+              "isRequired": false,
+              "isSecret": false
+            }
+          }
+        },
+        {
+          "name": "MSBUILD_MCP_TIMEOUT_SECONDS",
+          "value": "{timeout}",
+          "variables": {
+            "timeout": {
+              "description": "Timeout in seconds for graph construction (default: 120).",
+              "isRequired": false,
+              "isSecret": false
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/FlorinVica/msbuild-graph-mcp",
+    "source": "github"
+  }
+}
