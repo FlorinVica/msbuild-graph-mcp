@@ -75,11 +75,12 @@ static async Task RunMcpServer(string[] args)
             options.ServerInfo = new()
             {
                 Name = "msbuild-graph-mcp",
-                Version = "1.0.0"
+                Version = "1.1.0"
             };
         })
         .WithStdioServerTransport()
-        .WithToolsFromAssembly();
+        .WithToolsFromAssembly()
+        .WithPromptsFromAssembly();
 
     await builder.Build().RunAsync();
 }

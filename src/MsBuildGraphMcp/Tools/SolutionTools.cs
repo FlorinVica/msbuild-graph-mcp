@@ -87,6 +87,11 @@ public static class SolutionTools
                 continue;
             }
 
+            // Pre-scan for dangerous property functions
+            var secWarnings = SecurityScanner.ScanProjectFile(absPath);
+            foreach (var w in secWarnings)
+                Console.Error.WriteLine(w);
+
             Project? project = null;
             try
             {

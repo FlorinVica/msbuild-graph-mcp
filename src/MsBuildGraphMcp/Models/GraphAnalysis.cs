@@ -5,6 +5,7 @@ public sealed class GraphAnalysis
     public GraphMetrics Metrics { get; set; } = new();
     public List<GraphProjectNode> Projects { get; set; } = [];
     public List<string> TopologicalOrder { get; set; } = [];
+    public bool? Truncated { get; set; }
     public string? CircularDependencyError { get; set; }
     public List<string> Errors { get; set; } = [];
 }

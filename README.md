@@ -30,6 +30,10 @@ Ask your AI assistant natural questions about your .NET/C++ solution:
 | `detect_build_issues` | Find circular deps, TFM mismatches, orphan projects, platform mismatches |
 | `analyze_project_properties` | Inspect evaluated properties with source tracking (which file, which line) |
 | `compare_configurations` | Diff Debug vs Release (or any two configs) — properties, packages, references |
+| `analyze_impact` | "What breaks if I remove project X?" — direct + transitive dependents |
+| `check_package_versions` | NuGet package version consistency, CPM detection, VersionOverride tracking |
+| `get_build_order` | Lightweight build order (topological sort) with critical path length |
+| `list_projects` | Fast project listing without MSBuild evaluation — instant response |
 
 ## Quick Start
 
@@ -163,14 +167,14 @@ All tools are **read-only** — no builds are triggered, no files are modified.
 ## Architecture
 
 ```
-┌──────────────────┐     stdio (JSON-RPC)     ┌────────────────────┐
-│  Claude / Copilot │◄──────────────────────►│  msbuild-graph-mcp  │
-│  VS Code / Cursor │                         │                    │
-└──────────────────┘                         │  MSBuildLocator     │
-                                              │  ► ProjectGraph     │
-                                              │  ► ProjectCollection│
-                                              │  ► SolutionPersist. │
-                                              └────────────────────┘
+┌──────────────────┐     stdio (JSON-RPC)    ┌─────────────────────┐
+│  Claude / Copilot │◄──────────────────────►│ msbuild-graph-mcp   │
+│  VS Code / Cursor │                        │                     │
+└──────────────────┘                         │ MSBuildLocator      │
+                                             │ ► ProjectGraph      │
+                                             │ ► ProjectCollection │
+                                             │ ► SolutionPersist   │
+                                             └─────────────────────┘
 ```
 
 Key architectural decisions:

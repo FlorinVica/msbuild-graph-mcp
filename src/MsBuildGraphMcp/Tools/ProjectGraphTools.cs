@@ -27,6 +27,7 @@ public static class ProjectGraphTools
         [Description("Absolute path to .sln, .slnx, .slnf, or .csproj file")] string entryPath,
         [Description("Build configuration (e.g. Debug, Release). Optional.")] string? configuration = null,
         [Description("Build platform (e.g. AnyCPU, x64). Optional.")] string? platform = null,
+        [Description("Max projects to return (default 200). Larger solutions are truncated by dependency count.")] int maxProjects = 200,
         CancellationToken cancellationToken = default)
     {
         entryPath = ValidateEntryPath(entryPath);
@@ -52,6 +53,11 @@ public static class ProjectGraphTools
         {
             // .slnx needs pre-parsing — MSBuild's SolutionFile parser doesn't support it on .NET 8
             var entryPoints = await ResolveEntryPointsAsync(entryPath, globalProps, cancellationToken);
+
+            // Apply configurable timeout (default 120s, env: MSBUILD_MCP_TIMEOUT_SECONDS)
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeoutCts.CancelAfter(GraphTimeout);
+            cancellationToken = timeoutCts.Token;
 
             graph = new ProjectGraph(
                 entryPoints,
@@ -142,6 +148,16 @@ public static class ProjectGraphTools
                 ? 0
                 : node.ProjectReferences.Max(r => depths.GetValueOrDefault(r, 0)) + 1;
             depths[node] = depth;
+        }
+
+        // Truncate if too many projects (for LLM context window)
+        if (result.Projects.Count > maxProjects)
+        {
+            result.Truncated = true;
+            result.Projects = result.Projects
+                .OrderByDescending(p => p.References.Count + p.ReferencedBy.Count)
+                .Take(maxProjects)
+                .ToList();
         }
 
         result.Metrics = new GraphMetrics

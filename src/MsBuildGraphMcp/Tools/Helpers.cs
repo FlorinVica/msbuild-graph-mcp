@@ -26,10 +26,20 @@ internal static class Helpers
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
     };
 
+    private const int MaxPathLength = 500;
+
+    /// <summary>Default timeout for graph construction (configurable via MSBUILD_MCP_TIMEOUT_SECONDS).</summary>
+    internal static TimeSpan GraphTimeout { get; } = TimeSpan.FromSeconds(
+        int.TryParse(Environment.GetEnvironmentVariable("MSBUILD_MCP_TIMEOUT_SECONDS"), out var secs) && secs > 0
+            ? secs : 120);
+
     internal static string ValidateSolutionPath(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
             throw new ArgumentException("Solution path cannot be empty.");
+
+        if (input.Length > MaxPathLength)
+            throw new ArgumentException($"Path exceeds maximum length ({MaxPathLength} chars).");
 
         var resolved = Path.GetFullPath(input);
 
@@ -43,6 +53,16 @@ internal static class Helpers
         if (!File.Exists(resolved))
             throw new FileNotFoundException($"Solution not found: {resolved}");
 
+        // Check for symlinks/junctions (potential path traversal)
+        var fi = new FileInfo(resolved);
+        if (fi.LinkTarget != null || (fi.Attributes & FileAttributes.ReparsePoint) != 0)
+            throw new ArgumentException("Symbolic links and junctions are not supported for security reasons.");
+
+        // Check allowed directories
+        var pathError = SecurityScanner.CheckAllowedPath(resolved);
+        if (pathError != null)
+            throw new ArgumentException(pathError);
+
         return resolved;
     }
 
@@ -50,6 +70,9 @@ internal static class Helpers
     {
         if (string.IsNullOrWhiteSpace(input))
             throw new ArgumentException("Project path cannot be empty.");
+
+        if (input.Length > MaxPathLength)
+            throw new ArgumentException($"Path exceeds maximum length ({MaxPathLength} chars).");
 
         var resolved = Path.GetFullPath(input);
 
@@ -63,6 +86,14 @@ internal static class Helpers
         if (!File.Exists(resolved))
             throw new FileNotFoundException($"Project not found: {resolved}");
 
+        var fi = new FileInfo(resolved);
+        if (fi.LinkTarget != null || (fi.Attributes & FileAttributes.ReparsePoint) != 0)
+            throw new ArgumentException("Symbolic links and junctions are not supported for security reasons.");
+
+        var pathError = SecurityScanner.CheckAllowedPath(resolved);
+        if (pathError != null)
+            throw new ArgumentException(pathError);
+
         return resolved;
     }
 
@@ -70,6 +101,9 @@ internal static class Helpers
     {
         if (string.IsNullOrWhiteSpace(input))
             throw new ArgumentException("Path cannot be empty.");
+
+        if (input.Length > MaxPathLength)
+            throw new ArgumentException($"Path exceeds maximum length ({MaxPathLength} chars).");
 
         var resolved = Path.GetFullPath(input);
 
@@ -82,6 +116,14 @@ internal static class Helpers
 
         if (!File.Exists(resolved))
             throw new FileNotFoundException($"File not found: {resolved}");
+
+        var fi = new FileInfo(resolved);
+        if (fi.LinkTarget != null || (fi.Attributes & FileAttributes.ReparsePoint) != 0)
+            throw new ArgumentException("Symbolic links and junctions are not supported for security reasons.");
+
+        var pathError = SecurityScanner.CheckAllowedPath(resolved);
+        if (pathError != null)
+            throw new ArgumentException(pathError);
 
         return resolved;
     }
