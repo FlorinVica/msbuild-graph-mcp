@@ -14,12 +14,15 @@
 
     <!-- NuGet Metadata -->
     <PackageId>MsBuildGraphMcp</PackageId>
-    <Version>1.1.2</Version>
+    <Version>1.1.3</Version>
     <Authors>FlorinVica</Authors>
     <Description>MCP server for MSBuild project graph analysis — exposes dependency graphs, shared imports, TFM compatibility, configuration diffs, and build issue detection to LLM-powered coding assistants.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>mcp;model-context-protocol;ai;dotnet-tool;msbuild;build;dependency-graph</PackageTags>
     <PackageType>McpServer</PackageType>
+    <PackageProjectUrl>https://github.com/FlorinVica/msbuild-graph-mcp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/FlorinVica/msbuild-graph-mcp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- Microsoft.Build packages target netstandard2.0 — NU1701 is expected with ExcludeAssets="runtime" -->
     <NoWarn>$(NoWarn);NU1701</NoWarn>
