@@ -52,31 +52,57 @@ public static class ProjectListTools
                 });
             }
         }
-        else
+        else if (ext == ".slnf")
         {
-            try
+            var slnfPaths = await TryGetSlnfProjectPathsAsync(solutionPath, cancellationToken);
+            if (slnfPaths != null)
             {
-                var sln = SolutionFile.Parse(solutionPath);
-                foreach (var proj in sln.ProjectsInOrder)
+                foreach (var absPath in slnfPaths)
                 {
-                    if (proj.ProjectType == SolutionProjectType.SolutionFolder)
-                        continue;
-
                     result.Projects.Add(new ProjectEntry
                     {
-                        Name = proj.ProjectName,
-                        Path = proj.AbsolutePath,
-                        Extension = Path.GetExtension(proj.AbsolutePath).ToLowerInvariant(),
-                        ExistsOnDisk = File.Exists(proj.AbsolutePath)
+                        Name = Path.GetFileNameWithoutExtension(absPath),
+                        Path = absPath,
+                        Extension = Path.GetExtension(absPath).ToLowerInvariant(),
+                        ExistsOnDisk = File.Exists(absPath)
                     });
                 }
             }
-            catch (Exception ex) when (ex is InvalidProjectFileException)
+            else
             {
-                result.Errors.Add(ex.Message);
+                ParseSlnProjects(solutionPath, result);
             }
+        }
+        else
+        {
+            ParseSlnProjects(solutionPath, result);
         }
 
         return JsonSerializer.Serialize(result, JsonOptions);
+    }
+
+    private static void ParseSlnProjects(string solutionPath, ProjectListResult result)
+    {
+        try
+        {
+            var sln = SolutionFile.Parse(solutionPath);
+            foreach (var proj in sln.ProjectsInOrder)
+            {
+                if (proj.ProjectType == SolutionProjectType.SolutionFolder)
+                    continue;
+
+                result.Projects.Add(new ProjectEntry
+                {
+                    Name = proj.ProjectName,
+                    Path = proj.AbsolutePath,
+                    Extension = Path.GetExtension(proj.AbsolutePath).ToLowerInvariant(),
+                    ExistsOnDisk = File.Exists(proj.AbsolutePath)
+                });
+            }
+        }
+        catch (Exception ex) when (ex is InvalidProjectFileException)
+        {
+            result.Errors.Add(ex.Message);
+        }
     }
 }

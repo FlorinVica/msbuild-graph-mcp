@@ -44,33 +44,24 @@ public static class SolutionTools
                 projectEntries.Add((p.DisplayName ?? Path.GetFileNameWithoutExtension(p.FilePath), absPath));
             }
         }
+        else if (ext == ".slnf")
+        {
+            result.Format = "slnf";
+            var slnfPaths = await TryGetSlnfProjectPathsAsync(solutionPath, cancellationToken);
+            if (slnfPaths != null)
+            {
+                foreach (var absPath in slnfPaths)
+                    projectEntries.Add((Path.GetFileNameWithoutExtension(absPath), absPath));
+            }
+            else
+            {
+                ParseSlnIntoEntries(solutionPath, result, projectEntries);
+            }
+        }
         else
         {
-            result.Format = ext == ".slnf" ? "slnf" : "sln";
-            var sln = SolutionFile.Parse(solutionPath);
-            result.Configurations = sln.SolutionConfigurations
-                .Select(c => c.FullName).ToList();
-
-            foreach (var proj in sln.ProjectsInOrder)
-            {
-                if (proj.ProjectType == SolutionProjectType.SolutionFolder)
-                    continue;
-                if (proj.ProjectType != SolutionProjectType.KnownToBeMSBuildFormat)
-                    continue;
-
-                projectEntries.Add((proj.ProjectName, proj.AbsolutePath));
-
-                // Detect excluded configurations
-                foreach (var config in sln.SolutionConfigurations)
-                {
-                    if (proj.ProjectConfigurations.TryGetValue(config.FullName, out var pc)
-                        && !pc.IncludeInBuild)
-                    {
-                        result.ExcludedProjects.Add(
-                            $"{proj.ProjectName} excluded from {config.FullName}");
-                    }
-                }
-            }
+            result.Format = "sln";
+            ParseSlnIntoEntries(solutionPath, result, projectEntries);
         }
 
         // Evaluate each project for properties
@@ -120,6 +111,34 @@ public static class SolutionTools
         }
 
         return JsonSerializer.Serialize(result, JsonOptions);
+    }
+
+    private static void ParseSlnIntoEntries(
+        string solutionPath, SolutionAnalysis result, List<(string Name, string AbsPath)> entries)
+    {
+        var sln = SolutionFile.Parse(solutionPath);
+        result.Configurations = sln.SolutionConfigurations
+            .Select(c => c.FullName).ToList();
+
+        foreach (var proj in sln.ProjectsInOrder)
+        {
+            if (proj.ProjectType == SolutionProjectType.SolutionFolder)
+                continue;
+            if (proj.ProjectType != SolutionProjectType.KnownToBeMSBuildFormat)
+                continue;
+
+            entries.Add((proj.ProjectName, proj.AbsolutePath));
+
+            foreach (var config in sln.SolutionConfigurations)
+            {
+                if (proj.ProjectConfigurations.TryGetValue(config.FullName, out var pc)
+                    && !pc.IncludeInBuild)
+                {
+                    result.ExcludedProjects.Add(
+                        $"{proj.ProjectName} excluded from {config.FullName}");
+                }
+            }
+        }
     }
 
     private static string? NullIfEmpty(string? value) =>

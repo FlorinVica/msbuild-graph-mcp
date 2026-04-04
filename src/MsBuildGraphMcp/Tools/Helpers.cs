@@ -129,10 +129,36 @@ internal static class Helpers
     }
 
     /// <summary>
+    /// Reads a .slnf file and returns absolute project paths. Handles the case where
+    /// the .slnf references a .slnx solution (which SolutionFile.Parse doesn't support
+    /// on .NET 8 SDK). Project paths in .slnf are relative to the referenced solution.
+    /// Returns null if the .slnf does not reference a .slnx (caller should use SolutionFile.Parse).
+    /// </summary>
+    internal static async Task<List<string>?> TryGetSlnfProjectPathsAsync(string slnfPath, CancellationToken ct)
+    {
+        var slnfDir = Path.GetDirectoryName(slnfPath)!;
+        var json = await File.ReadAllTextAsync(slnfPath, ct);
+        using var doc = JsonDocument.Parse(json);
+        var solution = doc.RootElement.GetProperty("solution");
+        var solutionRelPath = solution.GetProperty("path").GetString()!;
+
+        if (!solutionRelPath.EndsWith(".slnx", StringComparison.OrdinalIgnoreCase))
+            return null;
+
+        var solutionAbsPath = Path.GetFullPath(Path.Combine(slnfDir, solutionRelPath));
+        var solutionDir = Path.GetDirectoryName(solutionAbsPath)!;
+
+        return solution.GetProperty("projects").EnumerateArray()
+            .Select(p => Path.GetFullPath(Path.Combine(solutionDir, p.GetString()!)))
+            .ToList();
+    }
+
+    /// <summary>
     /// Resolves entry points for ProjectGraph. .slnx files need pre-parsing because
     /// MSBuild's built-in SolutionFile parser (used internally by ProjectGraph) does not
     /// support .slnx format on .NET 8 SDK. We parse with SolutionPersistence and pass
     /// individual project paths as entry points.
+    /// Also handles .slnf files that reference .slnx solutions.
     /// </summary>
     internal static async Task<ProjectGraphEntryPoint[]> ResolveEntryPointsAsync(
         string entryPath,
@@ -157,7 +183,14 @@ internal static class Helpers
                 .ToArray();
         }
 
-        // .sln, .slnf, .csproj — ProjectGraph handles these natively
+        if (ext == ".slnf")
+        {
+            var slnfPaths = await TryGetSlnfProjectPathsAsync(entryPath, ct);
+            if (slnfPaths != null)
+                return slnfPaths.Select(p => new ProjectGraphEntryPoint(p, globalProps)).ToArray();
+        }
+
+        // .sln, .slnf (referencing .sln), .csproj — ProjectGraph handles these natively
         return [new ProjectGraphEntryPoint(entryPath, globalProps)];
     }
 

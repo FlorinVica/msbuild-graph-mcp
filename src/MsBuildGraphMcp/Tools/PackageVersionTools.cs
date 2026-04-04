@@ -140,6 +140,13 @@ public static class PackageVersionTools
                 .ToList();
         }
 
+        if (ext == ".slnf")
+        {
+            var slnfPaths = await TryGetSlnfProjectPathsAsync(solutionPath, ct);
+            if (slnfPaths != null)
+                return slnfPaths;
+        }
+
         var sln = SolutionFile.Parse(solutionPath);
         return sln.ProjectsInOrder
             .Where(p => p.ProjectType == SolutionProjectType.KnownToBeMSBuildFormat)
