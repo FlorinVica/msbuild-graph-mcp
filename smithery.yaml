@@ -1,1 +1,11 @@
-startCommand:n  type: stdion  configSchema:n    type: objectn    properties: {}n  commandFunction: |n    (config) => ({n      command: 'msbuild-graph-mcp',n      args: [],n      env: {}n    })n
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties: {}
+  commandFunction: |
+    (config) => ({
+      command: 'msbuild-graph-mcp',
+      args: [],
+      env: {}
+    })
