@@ -1,3 +1,6 @@
+## Claude session memory
+.claude/
+
 ## .NET
 bin/
 obj/

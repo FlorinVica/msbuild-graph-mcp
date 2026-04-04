@@ -1,5 +1,6 @@
 # MSBuild Project Graph MCP Server
 
+[![CI](https://github.com/FlorinVica/msbuild-graph-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/FlorinVica/msbuild-graph-mcp/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/MsBuildGraphMcp.svg)](https://www.nuget.org/packages/MsBuildGraphMcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8.0%2B-purple.svg)](https://dotnet.microsoft.com/)

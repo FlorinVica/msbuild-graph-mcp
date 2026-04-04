@@ -21,7 +21,7 @@ dotnet test tests/MsBuildGraphMcp.Tests/
 
 1. Create a feature branch
 2. Make your changes
-3. Run the full test suite: `dotnet test` (must pass all 269 tests)
+3. Run the full test suite: `dotnet test` (must pass all 333 tests)
 4. Submit a pull request
 
 ## Adding a New Tool
