@@ -14,7 +14,7 @@
 
     <!-- NuGet Metadata -->
     <PackageId>MsBuildGraphMcp</PackageId>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <Authors>FlorinVica</Authors>
     <Description>MCP server for MSBuild project graph analysis — exposes dependency graphs, shared imports, TFM compatibility, configuration diffs, and build issue detection to LLM-powered coding assistants.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

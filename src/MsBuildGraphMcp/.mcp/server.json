@@ -2,13 +2,13 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
   "name": "io.github.florinvica/msbuild-graph-mcp",
   "description": "Pre-build static analysis of MSBuild solutions — dependency graphs, TFM compatibility, shared imports, configuration diffs, package version consistency, and impact analysis for LLM-powered coding assistants.",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "packages": [
     {
       "registryType": "nuget",
       "registryBaseUrl": "https://api.nuget.org",
       "identifier": "MsBuildGraphMcp",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "transport": {
         "type": "stdio"
       },
